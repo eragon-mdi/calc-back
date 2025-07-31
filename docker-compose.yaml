@@ -1,0 +1,55 @@
+services:
+  app-calc:
+    build: 
+      context: .
+      dockerfile: ./docker/Dockerfile.app-calc
+    ports:
+      - 8080:${SERVER_PORT}
+    env_file:
+      - .env
+    networks:
+      - bridge_app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17.5
+    shm_size: 128mb
+    volumes:
+      - ./backup:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${STORAGE_USER}
+      - POSTGRES_PASSWORD=${STORAGE_PASS}
+      - POSTGRES_DB=${STORAGE_NAME}
+      - POSTGRES_PORT=${STORAGE_PORT}
+    networks:
+      - bridge_app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${STORAGE_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  migrator:
+    image: migrate/migrate
+    volumes:
+      - ./migrations:/migrations
+    command:
+      [
+        "-path", "/migrations",
+        "-database", "postgres://${STORAGE_USER}:${STORAGE_PASS}@db:${STORAGE_PORT}/${STORAGE_NAME}?sslmode=${STORAGE_SSLM}",
+        "up"
+      ]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - bridge_app
+    env_file:
+      - .env
+
+
+networks:
+  bridge_app:
+    driver: bridge

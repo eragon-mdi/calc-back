@@ -1,0 +1,185 @@
+definitions:
+  resttransport.CalcRequest:
+    properties:
+      expression:
+        example: 2+3/2
+        type: string
+    type: object
+  resttransport.CalcResponse:
+    properties:
+      expression:
+        example: 2+3/2
+        type: string
+      id:
+        example: a8098c1a-f86e-11da-bd1a-00112444be1e
+        type: string
+      result:
+        example: "3.5"
+        type: string
+    type: object
+  resttransport.ErrorResponse:
+    properties:
+      error:
+        example: <cause>
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /calculations:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает массив с информацией о вычислениях
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/resttransport.CalcResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+      summary: Получить крайние 10 вычислений
+      tags:
+      - calculations
+    post:
+      consumes:
+      - application/json
+      description: Создает новое вычисление на основе выражения
+      parameters:
+      - description: Данные для вычисления
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/resttransport.CalcRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/resttransport.CalcResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+      summary: Добавить новое вычисление
+      tags:
+      - calculations
+  /calculations/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет вычисление по индентификатору. Индентификатор - строковой
+        тип UUID
+      parameters:
+      - description: Индентификатор
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+      summary: Удаляет вычисление
+      tags:
+      - calculations
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о вычислении. Индентификатор - строковой
+        тип UUID
+      parameters:
+      - description: Индентификатор
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resttransport.CalcResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+      summary: Получить вычисление по индетификатору
+      tags:
+      - calculations
+    patch:
+      consumes:
+      - application/json
+      description: Изменяет выражение для расчёта и результат существующего выражения
+        по индентификатору. Индентификатор - строковой тип UUID
+      parameters:
+      - description: Индентификатор
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/resttransport.CalcResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/resttransport.ErrorResponse'
+      summary: Изменить вычисление
+      tags:
+      - calculations
+swagger: "2.0"
