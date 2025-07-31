@@ -28,7 +28,12 @@ migrate-new:
 
 
 # DEV fast build
-up: run-postrges migrate-up run-app
+dev-up: run-postrges wait migrate-up run-app
+
+wait:
+	@sleep 2
+
+dev-down: rm-postgres
 
 run-postrges:
 	docker run \
@@ -41,12 +46,12 @@ run-postrges:
 		postgres:latest
 
 rm-postgres:
-	docker rm -f $(CONTAINER_POSTGRES_NAME)
+	docker rm -f $(CONTAINER_DB_NAME)
 
 migrate-up:
 	migrate -path ./migrations -database "postgres://$(STORAGE_USER):$(STORAGE_PASS)@$(STORAGE_HOST):$(STORAGE_PORT)/$(STORAGE_NAME)?sslmode=$(STORAGE_SSLM)" up
 
-run:
+run-app:
 	go run -tags=dev cmd/calc-app/main.go
 
 clear-port: 					# if don't correct close app
@@ -55,7 +60,7 @@ clear-port: 					# if don't correct close app
 
 # DEV tools
 lint:
-	golangci-lint run ./...
+	golangci-lint run ./cmd/... ./internal/... ./pkg/...
 
 swag:
 	swag init -g ./cmd/calc-app/main.go

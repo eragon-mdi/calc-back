@@ -23,7 +23,7 @@ Swagger можно развернуть локально, запустив Go-п
 В Makefile предусмотрены команды для удобной работы:
 
 - `make start-quiet` — продовый запуск  
-- `make up` — быстро поднять dev-среду: запускает PostgreSQL в Docker, применяет миграции, запускает приложение с тегом `dev`  
+- `make dev-up` — быстро поднять dev-среду: запускает PostgreSQL в Docker, применяет миграции, запускает приложение с тегом `dev`  
 - `make migrate-new name=имя_миграции` — создать новую миграцию с указанным именем  
 
 Дополнительно доступны:
@@ -37,6 +37,36 @@ Swagger можно развернуть локально, запустив Go-п
 - `make go-tests-coverage`  
 
 ---
+
+## Конфигурация
+
+Пример основных переменных окружения (env):
+
+```env
+STORAGE_HOST=db
+STORAGE_PORT=5432
+STORAGE_USER=postgres
+STORAGE_PASS=secret
+STORAGE_NAME=mydb
+STORAGE_SSLM=disable
+
+SERVER_ADDR=0.0.0.0
+SERVER_PORT=8080
+SERVER_READ_TIMEOUT=10s
+SERVER_WRITE_TIMEOUT=10s
+SERVER_READ_HEADER_TIMEOUT=5s
+SERVER_IDLE_TIMEOUT=60s
+
+LOGGER_LEVEL=info
+LOGGER_ENCODING=json
+LOGGER_OUTPUT=stdout
+LOGGER_MESSAGE_KEY=message
+
+MIDDLEWARE_AUTH_TOKEN=dsakdjaskjkj
+```
+>Важно:
+>- Для локальной разработки без контейнеров в STORAGE_HOST ставится `localhost`.
+>- Для запуска в Docker Compose — STORAGE_HOST должен быть равен имени сервиса базы в оркестраторе: `db`.
 
 ## Тесты и покрытие
 
